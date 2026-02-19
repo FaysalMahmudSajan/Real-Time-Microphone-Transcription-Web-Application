@@ -109,3 +109,7 @@ def get_session(session_id: int, db: Session = Depends(get_db)):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run('main:app',port=8000,host='0.0.0.0',reload=True)
