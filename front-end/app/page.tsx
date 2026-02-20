@@ -28,7 +28,11 @@ export default function Home() {
   // Refresh sessions when recording stops
   useEffect(() => {
     if (!isRecording) {
-      fetchSessions();
+      // Add a delay to allow the backend to save the session before fetching
+      const timer = setTimeout(() => {
+        fetchSessions();
+      }, 1000);
+      return () => clearTimeout(timer);
     }
   }, [isRecording]);
 
@@ -41,8 +45,7 @@ export default function Home() {
     <main className="min-h-screen p-8 bg-gray-50 text-gray-900 font-sans">
       <div className="max-w-4xl mx-auto">
         <header className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2">Real-Time CPU Transcription</h1>
-          <p className="text-gray-600">Powered by Faster-Whisper (Tiny Model)</p>
+          <h1 className="text-3xl font-bold mb-2">Real-Time Live Transcription</h1>
         </header>
 
         {/* Recording Controls */}
