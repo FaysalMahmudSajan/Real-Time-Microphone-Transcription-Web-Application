@@ -53,62 +53,6 @@ def transcribe_file(file_path: str) -> str:
     print(f"Transcription: {text}")
     return text.strip()
 
-# @app.websocket("/ws")
-# async def websocket_endpoint(websocket: WebSocket, db: AsyncSession = Depends(get_db)):
-#     await websocket.accept()
-    
-#     # Create a temp file to accumulate audio stream
-#     # We use a file because faster-whisper/ffmpeg handles file headers (WebM) robustly
-#     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".webm")
-#     temp_filename = temp_file.name
-#     temp_file.close()
-    
-#     start_time = time.time()
-    
-#     try:
-#         while True:
-#             # Receive audio chunk from browser
-#             data = await websocket.receive_bytes()
-            
-#             # Append to the temporary file
-#             with open(temp_filename, "ab") as f:
-#                 f.write(data)
-            
-#             # Run transcription in a separate thread to keep WebSocket responsive
-#             loop = asyncio.get_event_loop()
-#             partial_transcript = await loop.run_in_executor(executor, transcribe_file, temp_filename)
-            
-#             # Send partial result back to client
-#             await websocket.send_json({"type": "partial", "text": partial_transcript})
-            
-#     except WebSocketDisconnect:
-#         # Session ended
-#         end_time = time.time()
-#         duration = end_time - start_time
-        
-#         # Final transcription pass
-#         final_transcript = transcribe_file(temp_filename)
-#         word_count = len(final_transcript.split()) if final_transcript else 0
-        
-#         # Persist to Database
-#         db_session = TranscriptionSession(
-#             transcript=final_transcript,
-#             duration=duration,
-#             word_count=word_count,
-#             created_at=start_time
-#         )
-#         db.add(db_session)
-#         await db.commit()
-        
-#         # Cleanup
-#         if os.path.exists(temp_filename):
-#             os.remove(temp_filename)
-            
-#     except Exception as e:
-#         print(f"Error: {e}")
-#         if os.path.exists(temp_filename):
-#             os.remove(temp_filename)
-
 
 CHUNK_TRANSCRIBE_INTERVAL = 3  # seconds
 
