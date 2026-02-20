@@ -1,7 +1,8 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from database import SessionLocal, engine, Base, TranscriptionSession
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from database import AsyncSessionLocal, engine, Base, TranscriptionSession
 from faster_whisper import WhisperModel
 import asyncio
 import json
@@ -9,9 +10,6 @@ import os
 import time
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
-
-# Initialize Database
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -29,22 +27,25 @@ model = WhisperModel("tiny", device="cpu", compute_type="int8")
 # Thread pool for running blocking transcription tasks
 executor = ThreadPoolExecutor(max_workers=1)
 
-def get_db():
-    db = SessionLocal()
-    try:
+@app.on_event("startup")
+async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+async def get_db():
+    async with AsyncSessionLocal() as db:
         yield db
-    finally:
-        db.close()
 
 def transcribe_file(file_path: str) -> str:
     """Runs transcription on a file path using Faster Whisper."""
     segments, _ = model.transcribe(file_path, beam_size=5)
     # Combine segments into a single string
     text = " ".join([segment.text for segment in segments])
+    print(f"Transcription: {text}")
     return text.strip()
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
+async def websocket_endpoint(websocket: WebSocket, db: AsyncSession = Depends(get_db)):
     await websocket.accept()
     
     # Create a temp file to accumulate audio stream
@@ -88,7 +89,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
             created_at=start_time
         )
         db.add(db_session)
-        db.commit()
+        await db.commit()
         
         # Cleanup
         if os.path.exists(temp_filename):
@@ -100,12 +101,14 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
             os.remove(temp_filename)
 
 @app.get("/sessions")
-def get_sessions(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
-    return db.query(TranscriptionSession).order_by(TranscriptionSession.id.desc()).offset(skip).limit(limit).all()
+async def get_sessions(skip: int = 0, limit: int = 20, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(TranscriptionSession).order_by(TranscriptionSession.id.desc()).offset(skip).limit(limit))
+    return result.scalars().all()
 
 @app.get("/sessions/{session_id}")
-def get_session(session_id: int, db: Session = Depends(get_db)):
-    session = db.query(TranscriptionSession).filter(TranscriptionSession.id == session_id).first()
+async def get_session(session_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(TranscriptionSession).filter(TranscriptionSession.id == session_id))
+    session = result.scalars().first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
