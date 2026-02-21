@@ -31,5 +31,7 @@ frontend:
 
 *Prerequisite install Node.JS*
 ```bash
-cd frontend/npm ci
+cd frontend
+npm install
 ```
+
