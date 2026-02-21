@@ -29,6 +29,7 @@ pip install -r backend/requirements.txt
 ```
 frontend:
 
-*Required install Node JS*
+*Prerequisite install Node.JS*
 ```bash
-
+front/npm ci
+```
