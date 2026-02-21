@@ -47,7 +47,7 @@ This will:
 ```bash
 cd ..
 cd backend
-uvicorn app:app --port 8000 --reload
+uvicorn main:app --port 8000 --reload
 ```
 This will:
 
