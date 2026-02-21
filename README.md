@@ -2,14 +2,14 @@
 Developing a fully functional, real-time speech-to-text application where audio captured from the user’s browser is streamed to the backend for transcription. All processing must operate on CPU-only using open-source speech recognition models.
 
 ## Setup Instructions
-Local Development
-1. Clone the Repository
+### Local Development
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/FaysalMahmudSajan/Real-Time-Microphone-Transcription-Web-Application.git
 cd Real-Time-Microphone-Transcription-Web-Application
 ```
-2. Create a Virtual Environment
+#### 2. Create a Virtual Environment
 Windows:
 ```bash
 python -m venv .venv
@@ -35,3 +35,31 @@ cd frontend
 npm install
 ```
 
+#### 3. Run the Application
+- frontend
+```bash
+npm run dev
+```
+This will:
+1. Start the development server
+2. Make the API available at http://localhost:3000
+- backecd backend
+```bash
+cd ..
+cd backend
+uvicorn app:app --port 8000 --reload
+```
+This will:
+
+1. Start the development server
+2. Enable auto-reload for code changes
+3. Make the API available at http://localhost:8000
+Access the API documentation at http://localhost:8000/docs
+
+Docker Setup
+Running the Docker Compose
+Run the container from your locally built image:
+
+```bash
+docker compose up --build
+```
