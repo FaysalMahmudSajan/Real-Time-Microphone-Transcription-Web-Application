@@ -50,7 +50,7 @@ def transcribe_file(file_path: str) -> str:
         )
     # Combine segments into a single string
     text = " ".join([segment.text for segment in segments])
-    print(f"Transcription: {text}")
+    # print(f"Transcription: {text}")
     return text.strip()
 
 
