@@ -55,7 +55,7 @@ This will:
 3. Make the API available at http://localhost:8000
 Access the API documentation at http://localhost:8000/docs
 
-Docker Setup
+# Docker Setup
 Running the Docker Compose
 Run the container from your locally built image:
 
