@@ -45,7 +45,6 @@ This will:
 2. Make the API available at http://localhost:3000
 - backecd backend
 ```bash
-cd ..
 cd backend
 uvicorn main:app --port 8000 --reload
 ```
