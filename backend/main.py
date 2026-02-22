@@ -126,7 +126,8 @@ async def websocket_endpoint(websocket: WebSocket, db: AsyncSession = Depends(ge
 
 
 @app.get("/sessions")
-async def get_sessions(skip: int = 0, limit: int = 20, db: AsyncSession = Depends(get_db)):
+# async def get_sessions(skip: int = 0, limit: int = 20, db: AsyncSession = Depends(get_db)):
+async def get_sessions(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(TranscriptionSession).order_by(TranscriptionSession.id.desc()).offset(skip).limit(limit))
     return result.scalars().all()
 
