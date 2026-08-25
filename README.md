@@ -1,3 +1,5 @@
+
+
 # Real-Time-Microphone-Transcription-Web-Application
 Develop a fully functional, real-time speech-to-text application where audio captured from the user’s browser is streamed to the backend for transcription. All processing must operate on CPU-only using open-source speech recognition models.
 
@@ -45,7 +47,7 @@ npm run dev
 This will:
 1. Start the development server
 2. Make the API available at http://localhost:3000
-- backecd backend
+- backend
 ```bash
 cd backend
 uvicorn main:app --port 8000 --reload
